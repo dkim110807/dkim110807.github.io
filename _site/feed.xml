@@ -1,0 +1,119 @@
+
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <id>http://localhost:4000/</id>
+  <title>dkim110807</title>
+  <subtitle>A minimal, responsive and feature-rich Jekyll theme for technical writing.</subtitle>
+  <updated>2023-10-01T00:49:50+09:00</updated>
+  <author>
+    <name>dkim110807</name>
+    <uri>http://localhost:4000/</uri>
+  </author>
+  <link rel="self" type="application/atom+xml" href="http://localhost:4000/feed.xml"/>
+  <link rel="alternate" type="text/html" hreflang="en"
+    href="http://localhost:4000/"/>
+  <generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator>
+  <rights> © 2023 dkim110807 </rights>
+  <icon>/assets/img/favicons/favicon.ico</icon>
+  <logo>/assets/img/favicons/favicon-96x96.png</logo>
+
+
+  
+  <entry>
+    <title>Miller - Rabin Primality Test</title>
+    <link href="http://localhost:4000/posts/Miller-Rabin/" rel="alternate" type="text/html" title="Miller - Rabin Primality Test" />
+    <published>2023-09-30T23:07:00+09:00</published>
+  
+    <updated>2023-09-30T23:07:00+09:00</updated>
+  
+    <id>http://localhost:4000/posts/Miller-Rabin/</id>
+    <content src="http://localhost:4000/posts/Miller-Rabin/" />
+    <author>
+      <name>dkim110807</name>
+    </author>
+
+  
+    
+    <category term="Algorithms" />
+    
+    <category term="Math" />
+    
+    <category term="Number Theory" />
+    
+  
+
+  
+    <summary>
+      
+
+
+
+
+
+      Fermat’s Little Theorem
+
+소수 $p$와 서로소인 $a$에 대해
+
+\[a^{p-1} \equiv 1 \pmod{p}\]
+
+이 성립한다. 
+
+Proof.
+
+    </summary>
+  
+
+  </entry>
+
+  
+  <entry>
+    <title>BOJ - 1000</title>
+    <link href="http://localhost:4000/posts/BOJ-1000/" rel="alternate" type="text/html" title="BOJ - 1000" />
+    <published>2023-09-29T19:07:00+09:00</published>
+  
+    <updated>2023-09-29T19:07:00+09:00</updated>
+  
+    <id>http://localhost:4000/posts/BOJ-1000/</id>
+    <content src="http://localhost:4000/posts/BOJ-1000/" />
+    <author>
+      <name>dkim110807</name>
+    </author>
+
+  
+    
+    <category term="BOJ" />
+    
+  
+
+  
+    <summary>
+      
+
+
+
+
+
+      문제
+BOJ 1000 - A+B
+
+풀이
+두 수를 입력받아 합을 출력하면 된다.
+
+코드
+#include &amp;lt;bits/stdc++.h&amp;gt;
+
+int main() {
+  int a, b;
+  std::cin &amp;gt;&amp;gt; a &amp;gt;&amp;gt; b;
+  std::cout &amp;lt;&amp;lt; a + b;
+}
+
+
+    </summary>
+  
+
+  </entry>
+
+</feed>
+
+
