@@ -13,8 +13,8 @@
 
 
     
-    "snippet": "Fermat’s Little Theorem소수 $p$와 서로소인 $a$에 대해\\[a^{p-1} \\equiv 1 \\pmod{p}\\]이 성립한다. Proof.",
-    "content": "Fermat’s Little Theorem소수 $p$와 서로소인 $a$에 대해\\[a^{p-1} \\equiv 1 \\pmod{p}\\]이 성립한다. Proof."
+    "snippet": "Fermat’s Little Theorem소수 $p$와 서로소인 $a$에 대해\\[a^{p-1} \\equiv 1 \\pmod{p}\\]이 성립한다. Proof.먼저, $a$, $2a$, $3a$, $\\cdots$, $\\left(p-1\\right)a$ 중 어느 것도 $\\bmod p$",
+    "content": "Fermat’s Little Theorem소수 $p$와 서로소인 $a$에 대해\\[a^{p-1} \\equiv 1 \\pmod{p}\\]이 성립한다. Proof.먼저, $a$, $2a$, $3a$, $\\cdots$, $\\left(p-1\\right)a$ 중 어느 것도 $\\bmod p$"
   },
   
   {

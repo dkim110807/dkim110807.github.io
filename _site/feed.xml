@@ -4,7 +4,7 @@
   <id>http://localhost:4000/</id>
   <title>dkim110807</title>
   <subtitle>A minimal, responsive and feature-rich Jekyll theme for technical writing.</subtitle>
-  <updated>2023-10-01T01:04:13+09:00</updated>
+  <updated>2023-10-01T01:10:07+09:00</updated>
   <author>
     <name>dkim110807</name>
     <uri>http://localhost:4000/</uri>
@@ -59,6 +59,7 @@
 이 성립한다. 
 
 Proof.
+먼저, $a$, $2a$, $3a$, $\cdots$, $\left(p-1\right)a$ 중 어느 것도 $\bmod p$
 
     </summary>
   

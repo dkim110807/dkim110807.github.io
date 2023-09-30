@@ -16,3 +16,4 @@ $$ a^{p-1} \equiv 1 \pmod{p} $$
 이 성립한다. <br>
 
 ### Proof.
+먼저, $a$, $2a$, $3a$, $\cdots$, $\left(p-1\right)a$ 중 어느 것도 $\bmod p$
