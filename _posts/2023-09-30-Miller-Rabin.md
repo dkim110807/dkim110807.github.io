@@ -39,3 +39,19 @@ $$ a ^ {p - 1} \equiv 1 \pmod{p} $$
 $$ a ^ {p} \equiv a \pmod{p} $$
 
 이 성립한다.
+
+## Fermat's Primality Test
+판별하려는 수 $n$이 소수라면, 임의의 $n$과 서로소인 $a$에 대해서
+
+$$ a ^ {n - 1} \equiv 1 \pmod{n} $$
+
+이므로, 여러 $a$에 대해서 항상 성립하면 소수로 판별하는 방법이다.
+
+### Carmichael Number
+카마이클 수는 합성수 $n$에 대해 그보다 작고, $n$과 서로소인 임의의 $b$에 대해 항상 
+
+$$b ^ {n - 1} \equiv 1 \pmod{n}$$
+
+을 만족하는 수로 대표적으로 $341 = 11 \times 31$이 있다. 이러한 이유로 페르마 소수 판별법의 반례이기도 하다.
+
+## Miller - Rabin Primality Test
