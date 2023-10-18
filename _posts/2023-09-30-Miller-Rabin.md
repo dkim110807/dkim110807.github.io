@@ -66,54 +66,7 @@ $p$를 소수로 가정하였으므로 위의 인수분해한 결과 중 $0$이 
 ### Code
 
 ```cpp
-class miller_rabin {
-public:
-    using u64 = uint64_t;
 
-    bool is_prime(u64 n) {
-        if (n < 2) return false;
-        if (n == 2 || n == 3) return true;
-        if (n % 6 != 1 && n % 6 != 5) return false;
-
-        const auto &base = n < 4759123141ULL ? base_small : base_large;
-        const int s = __builtin_ctzll(n - 1);
-        const u64 d = n >> s;
-
-        for (const auto &b: base) {
-            if (b >= n) break;
-            if (check_composite(n, b, d, s)) return false;
-        }
-        return true;
-    }
-
-protected:
-    u64 mul(u64 a, u64 b, u64 m) {
-        int64_t ret = a * b - m * u64(1.L / m * a * b);
-        return ret + m * (ret < 0) - m * (ret >= int64_t(m));
-    }
-
-private:
-    const std::vector<u64> base_small = {2, 7, 61}, base_large = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31};
-
-    u64 pow(u64 a, u64 p, u64 m) {
-        u64 ret = 1;
-        for (; p; p >>= 1) {
-            if (p & 1) ret = mul(ret, a, m);
-            a = mul(a, a, m);
-        }
-        return ret;
-    }
-
-    bool check_composite(u64 n, u64 x, u64 d, int s) {
-        x = pow(x, d, n);
-        if (x == 1 || x == n - 1) return false;
-        while (--s) {
-            x = mul(x, x, n);
-            if (x == n - 1) return false;
-        }
-        return true;
-    };
-};
 ```
 
 ### FFT
