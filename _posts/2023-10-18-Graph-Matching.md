@@ -24,3 +24,9 @@ math: true
 그래프의 정점을 두 그룹으로 적절히 분류하였을때 간선이 서로 다른 그룹의 정점을 연결하고 같은 그룹의 정점 사이 간선이 없는 그래프이다.
 
 ![Desktop View](/assets/img/posts/2023-10-18-Graph-Matching-Bipartite-Graph.png){: width="472" height="489" }
+
+## Maximum Matching in Bipartite Graph
+이분 그래프에서의 최대 매칭은 최대 유량 문제로 해결 가능하다. 
+1. 주어진 이분 그래프 $G = \left(A \cup B, E\right)$에 대해서 모든 간선에 대해 $A$에서 $B$로 가는 용량이 $1$인 간선을 만든다. 
+2. 새로운 정점 $s$와 $t$를 추가하여, $s$와 $A$의 모든 정점을 용량이 $1$인 간선으로 이어주고, $t$와 $B$의 모든 정점을 용량이 $1$인 간선으로 이어준다. 
+3. 이렇게 만들어진 새로운 그래프 $G^ \prime$에 대해 $s$에서 $t$로 유량을 흘려주면 
