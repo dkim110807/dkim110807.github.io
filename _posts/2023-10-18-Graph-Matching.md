@@ -13,7 +13,7 @@ math: true
 ![Desktop View](/assets/img/posts/2023-10-18-Graph-Matching-1.png){: width="572" height="489" }
 
 ### Maximum Matching
-주어진 그래프 $G$의 매칭 중 간선의 수가 최대인 매칭을 의미한다. 이 경우는 아래의 가중치가 모든 같은 경우와 같다.
+주어진 그래프 $G$의 매칭 중 간선의 수가 최대인 매칭을 의미한다. 이 경우는 [아래](#maximum-matching-in-weighted-graph)의 가중치가 모든 같은 경우와 같다.
 
 ![Desktop View](/assets/img/posts/2023-10-18-Graph-Matching-2.png){: width="272" height="289" }
 
@@ -38,10 +38,28 @@ $M$을 위의 $G^\prime$에서 구한 최대 유량을 구성하는 간선 중 $
 1. $M$은 가능한 매칭이다.
 2. $M$은 가능한 매칭 중 간선의 수가 최대이다.
 
-### $M$ is a matching
+#### $M$ is a matching
 그래프 $G^\prime$을 정의한 방식에 의해 최대 유량을 구성하는 간선에는 어떠한 $A$의 노드에서도 최대 $1$개의 간선이 나가고, 어떠한 $B$의 노드에서도 최대 $1$개의 간선이 들어온다. 
 만약, 어떠한 $A$의 노드에서 나가는 간선이 $2$개 이상이라면, $s$에서 이 노드를 연결하는 간선의 용량이 $1$이므로 불가능하다. 비슷하게, 어떠한 $B$의 노드에 들어오는 간선이 $2$개 이상이라면, $t$에서 이 노드를 연결하는 간선의 용량이 $1$이므로 불가능하다.
 
 ![Desktop View](/assets/img/posts/2023-10-18-Graph-Matching-4.png){: width="472"}
 
+#### $M$ is a maximum matching
+
+[PDF](https://www.cs.cmu.edu/~ckingsf/bioinfo-lectures/matching.pdf)
+
+### Code
+
+```cpp
+
+```
+
 ## Maximum Matching in General Graph
+주어진 그래프 $G(V, E)$에서의 임의의 매칭 $M$에 대해 Exposed Vertex는 그래프의 정점 중 매칭에는 포함되지 않는 정점을 의미한다. Augmenting Path는 주어진 그래프의
+경로 중 양 끝 정점이 서로 다른 Exposed Vertex이며 경로상의 간선들이 매칭에 포함되는 간선과 매칭에 포함되지 않는 간선이 교대로 나타나는 경로를 의미한다.
+
+![Desktop View](/assets/img/posts/2023-10-18-Graph-Matching-6.png){: width="272"}
+
+위의 그림에서 파란색 원으로 표현된 정점들은 Exposed Vertex를 의미하며, 파란색의 경로는 Augmenting Path이다.
+
+### Berge's Lemma
