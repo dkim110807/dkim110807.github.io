@@ -45,6 +45,9 @@ $M$을 위의 $G^\prime$에서 구한 최대 유량을 구성하는 간선 중 $
 ![Desktop View](/assets/img/posts/2023-10-18-Graph-Matching-4.png){: width="472"}
 
 #### $M$ is a maximum matching
+간선의 개수가 $k$개인 매칭이 존재한다면, 
+
+![Desktop View](/assets/img/posts/2023-10-18-Graph-Matching-5.png){: width="472"}
 
 [PDF](https://www.cs.cmu.edu/~ckingsf/bioinfo-lectures/matching.pdf)
 
