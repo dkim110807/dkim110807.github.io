@@ -20,7 +20,9 @@ math: true
 ### Maximum Matching in Weighted Graph
 주어진 그래프 $G$가 가중치가 있는 경우 매칭 중 간선의 가중치의 합이 최대인 매칭을 의미한다.
 
-![Desktop View](/assets/img/posts/2023-10-18-Graph-Matching-3.png){: width="272"}
+![Desktop View](/assets/img/posts/2023-10-18-Graph-Matching-3.png){: width="572"}
+
+왼쪽 그림의 경우 매칭 중 간선의 수가 가장 많은 Maximum Matching 이지만 가중치의 합이 $30$으로 오른쪽의 매칭의 가중치 합인 $38$보다 작다.
 
 ## Bipartite Graph
 그래프의 정점을 두 그룹으로 적절히 분류하였을때 간선이 서로 다른 그룹의 정점을 연결하고 같은 그룹의 정점 사이 간선이 없는 그래프이다.
