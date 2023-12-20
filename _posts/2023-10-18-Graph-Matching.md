@@ -156,8 +156,7 @@ bool dfs(int v) {
 int main() {
     int N, M; // N = |A|, M = |B|
     std::cin >> N >> M;
-
-    int source = N + M + 1, sink = N + M + 2;
+    
     for (int c, i = 1; i <= N; i++) {
         std::cin >> c;
         for (int u; c--;) {
