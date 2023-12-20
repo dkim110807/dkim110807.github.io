@@ -194,5 +194,3 @@ int main() {
 2. $M$과 $M^\prime$ 사이 교대되는 간선을 가지며 짝수 개의 정점을 가지는 사이클
 3. $M$과 $M^\prime$ 사이 교대되는 간선을 가지며 끝 정점이 서로 다른 경로
 
-{% include embed/youtube.html id='2Xq4GqQzPFo' %}
-
