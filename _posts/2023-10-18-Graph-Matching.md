@@ -58,7 +58,7 @@ $M$을 위의 $G^\prime$에서 구한 최대 유량을 구성하는 간선 중 $
 ### Code
 
 ```cpp
-const int MAX = 2004;
+const int MAX = 2'004;
 
 int capacity[MAX][MAX], flow[MAX][MAX], parent[MAX];
 std::vector<int> graph[MAX];
@@ -130,6 +130,52 @@ int main() {
 }
 ```
 
+위의 코드는 위에서 제시한 최대 유량을 Ford-Fulkerson 알고리즘을 이용하여 구현한 것이다. 아래는 이분 매칭 알고리즘의 구현이다.
+
+```cpp
+const int MAX = 2'004;
+
+int match[MAX + 1];
+bool visit[MAX + 1];
+std::vector<int> graph[MAX + 1];
+
+bool dfs(int v) {
+    if (visit[v]) return false;
+    visit[v] = true;
+
+    for (auto nv: graph[v]) {
+        if (!match[nv] || dfs(match[nv])) {
+            match[nv] = v;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+int main() {
+    int N, M; // N = |A|, M = |B|
+    std::cin >> N >> M;
+
+    int source = N + M + 1, sink = N + M + 2;
+    for (int c, i = 1; i <= N; i++) {
+        std::cin >> c;
+        for (int u; c--;) {
+            std::cin >> u;
+            graph[i].emplace_back(u);
+        }
+    }
+    
+    int ans = 0;
+    for (int i = 1; i <= N; i++) {
+        memset(visit, 0, sizeof(visit));
+        ans += dfs(i);
+    }
+    
+    std::cout << ans;
+}
+```
+
 ## Maximum Matching in General Graph
 주어진 그래프 $G\left(V, E\right)$에서의 임의의 매칭 $M$에 대해 Exposed Vertex는 그래프의 정점 중 매칭에는 포함되지 않는 정점을 의미한다. Augmenting Path는 주어진 그래프의
 경로 중 양 끝 정점이 서로 다른 Exposed Vertex이며 경로상의 간선들이 매칭에 포함되는 간선과 매칭에 포함되지 않는 간선이 교대로 나타나는 경로를 의미한다.
@@ -145,4 +191,8 @@ int main() {
 그래프 $G\left(V, E\right)$의 두 매칭 $M$과 $M^\prime$에 대해, 두 매칭의 대칭 차집합인 $G^\prime = \left(M - M^{\prime}\right) \cup \left(M^{\prime} - M\right)$의 그래프는 아래와 같이 총 $3$가지 형태의 정점들을 가진다.
 
 1. 독립된 정점
-2. 
+2. $M$과 $M^\prime$ 사이 교대되는 간선을 가지며 짝수 개의 정점을 가지는 사이클
+3. $M$과 $M^\prime$ 사이 교대되는 간선을 가지며 끝 정점이 서로 다른 경로
+
+{% include embed/youtube.html id='2Xq4GqQzPFo' %}
+
