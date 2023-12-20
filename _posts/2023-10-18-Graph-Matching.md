@@ -58,7 +58,76 @@ $M$을 위의 $G^\prime$에서 구한 최대 유량을 구성하는 간선 중 $
 ### Code
 
 ```cpp
+const int MAX = 2004;
 
+int capacity[MAX][MAX], flow[MAX][MAX], parent[MAX];
+std::vector<int> graph[MAX];
+
+int maximum_flow(int source, int sink) {
+    int ans = 0;
+    while (true) {
+        std::fill(parent, parent + MAX, -1);
+
+        std::queue<int> q;
+        q.push(source);
+
+        while (!q.empty()) {
+            int v = q.front();
+            q.pop();
+            for (auto &nv: graph[v]) {
+                if (parent[nv] == -1 && capacity[v][nv] > flow[v][nv]) {
+                    q.push(nv), parent[nv] = v;
+                    if (nv == sink) break;
+                }
+            }
+        }
+
+        if (parent[sink] == -1) break;
+
+        int min = INT_MAX, v = sink;
+        while (v != source) {
+            min = std::min(min, capacity[parent[v]][v] - flow[parent[v]][v]);
+            v = parent[v];
+        }
+
+        v = sink;
+        while (v != source) {
+            flow[parent[v]][v] += min, flow[v][parent[v]] -= min;
+            v = parent[v];
+        }
+
+        ans += min;
+    }
+
+    return ans;
+}
+
+int main() {
+    int N, M; // N = |A|, M = |B|
+    std::cin >> N >> M;
+
+    int source = N + M + 1, sink = N + M + 2;
+    for (int c, i = 1; i <= N; i++) {
+        std::cin >> c;
+        for (int u; c--;) {
+            std::cin >> u;
+            graph[i].emplace_back(N + u), graph[N + u].emplace_back(i);
+            capacity[i][N + u] = 1;
+        }
+    }
+
+    for (int i = 1; i <= N; i++) {
+        graph[i].emplace_back(source), graph[source].emplace_back(i);
+        capacity[source][i] = 1;
+    }
+
+    for (int i = 1; i <= M; i++) {
+        graph[i + N].emplace_back(sink), graph[sink].emplace_back(i + N);
+        capacity[i + N][sink] = 1;
+    }
+
+    std::cout << maximum_flow(source, sink);
+}
 ```
 
 ## Maximum Matching in General Graph
