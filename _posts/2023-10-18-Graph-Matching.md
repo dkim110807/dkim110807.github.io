@@ -20,10 +20,12 @@ math: true
 ### Maximum Matching in Weighted Graph
 주어진 그래프 $G$가 가중치가 있는 경우 매칭 중 간선의 가중치의 합이 최대인 매칭을 의미한다.
 
+![Desktop View](/assets/img/posts/2023-10-18-Graph-Matching-3.png){: width="272"}
+
 ## Bipartite Graph
 그래프의 정점을 두 그룹으로 적절히 분류하였을때 간선이 서로 다른 그룹의 정점을 연결하고 같은 그룹의 정점 사이 간선이 없는 그래프이다.
 
-![Desktop View](/assets/img/posts/2023-10-18-Graph-Matching-3.png){: width="472" height="489" }
+![Desktop View](/assets/img/posts/2023-10-18-Graph-Matching-4.png){: width="472" height="489" }
 
 ## Maximum Matching in Bipartite Graph
 이분 그래프에서의 최대 매칭은 최대 유량 문제로 해결 가능하다. 
@@ -42,12 +44,12 @@ $M$을 위의 $G^\prime$에서 구한 최대 유량을 구성하는 간선 중 $
 그래프 $G^\prime$을 정의한 방식에 의해 최대 유량을 구성하는 간선에는 어떠한 $A$의 노드에서도 최대 $1$개의 간선이 나가고, 어떠한 $B$의 노드에서도 최대 $1$개의 간선이 들어온다. 
 만약, 어떠한 $A$의 노드에서 나가는 간선이 $2$개 이상이라면, $s$에서 이 노드를 연결하는 간선의 용량이 $1$이므로 불가능하다. 비슷하게, 어떠한 $B$의 노드에 들어오는 간선이 $2$개 이상이라면, $t$에서 이 노드를 연결하는 간선의 용량이 $1$이므로 불가능하다.
 
-![Desktop View](/assets/img/posts/2023-10-18-Graph-Matching-4.png){: width="472"}
+![Desktop View](/assets/img/posts/2023-10-18-Graph-Matching-5.png){: width="472"}
 
 #### $M$ is a maximum matching
 간선의 개수가 $k$개인 매칭이 존재한다면, 
 
-![Desktop View](/assets/img/posts/2023-10-18-Graph-Matching-5.png){: width="472"}
+![Desktop View](/assets/img/posts/2023-10-18-Graph-Matching-6.png){: width="472"}
 
 [PDF](https://www.cs.cmu.edu/~ckingsf/bioinfo-lectures/matching.pdf)
 
@@ -61,7 +63,7 @@ $M$을 위의 $G^\prime$에서 구한 최대 유량을 구성하는 간선 중 $
 주어진 그래프 $G\left(V, E\right)$에서의 임의의 매칭 $M$에 대해 Exposed Vertex는 그래프의 정점 중 매칭에는 포함되지 않는 정점을 의미한다. Augmenting Path는 주어진 그래프의
 경로 중 양 끝 정점이 서로 다른 Exposed Vertex이며 경로상의 간선들이 매칭에 포함되는 간선과 매칭에 포함되지 않는 간선이 교대로 나타나는 경로를 의미한다.
 
-![Desktop View](/assets/img/posts/2023-10-18-Graph-Matching-6.png){: width="272"}
+![Desktop View](/assets/img/posts/2023-10-18-Graph-Matching-7.png){: width="272"}
 
 위의 그림에서 파란색 원으로 표현된 정점들은 Exposed Vertex를 의미하며, 파란색의 경로는 Augmenting Path이다.
 
