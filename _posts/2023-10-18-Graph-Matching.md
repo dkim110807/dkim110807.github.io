@@ -1,7 +1,7 @@
 ---
 title: Matching in General Graph
 author: dkim110807
-date: 2023-10-18 19:30:00 +0900
+date: 2026-10-18 19:30:00 +0900
 categories: [Algorithms, Graphs]
 tags: [graphs]
 math: true
@@ -58,7 +58,7 @@ $M$을 위의 $G^\prime$에서 구한 최대 유량을 구성하는 간선 중 $
 ### Code
 
 ```cpp
-const int MAX = 2'004;
+const int MAX = 2'024;
 
 int capacity[MAX][MAX], flow[MAX][MAX], parent[MAX];
 std::vector<int> graph[MAX];
@@ -133,7 +133,7 @@ int main() {
 위의 코드는 위에서 제시한 최대 유량을 Ford-Fulkerson 알고리즘을 이용하여 구현한 것이다. 아래는 이분 매칭 알고리즘의 구현이다.
 
 ```cpp
-const int MAX = 2'004;
+const int MAX = 2'024;
 
 int match[MAX + 1];
 bool visit[MAX + 1];
