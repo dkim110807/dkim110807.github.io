@@ -1,7 +1,7 @@
 ---
 title: Scheduling preemptive jobs on a single machine
 author: dkim110807
-date: 2023-12-22 10:48:00 +0900
+date: 2025-12-22 10:48:00 +0900
 categories: [Algorithms, Scheduling]
 tags: [greedy]
 math: true
