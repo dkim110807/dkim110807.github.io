@@ -370,3 +370,86 @@ int main() {
 
 ## 2024.10.29.
 
+### <a href = "https://www.acmicpc.net/problem/18939">BOJ 18939</a>
+
+## 2024.10.30.
+
+### <a href = "https://www.acmicpc.net/problem/16127">BOJ 16127</a>
+
+미생물을 만드는 2가지 방법 중에서, $i$번 미생물을 구입하여 넣는 방법을 어떠한 $root = n + 1$번 미생물에서 약물을 사용하여 $i$번 미생물 하나를 만든다고 생각하자. 또한, 문제 조건 상에서 각각의 미생물을 최소 하나씩은 만들어야 함을 알 수 있다. 그러면, 이제 각각의 미생물을 하나씩 만드는 최소 비용을 생각해보자.
+
+문제의 상황은 하나의 방향 그래프로 생각 가능하다. $i$번 미생물로부터 $j$번 미생물로 비용 $c$로 만들 수 있다면 그래프에서 $i \rightarrow j$ 방향 간선의 가중치 $c$를 추가하자. 그러면, 먼저 $root$ 노드에서 다른 모든 노드로 갈 수 있으며, 하나씩 최소 비용으로 만들기 때문에 여기서 directed mst를 만든다고 생각할 수 있다. 이제 하나씩 모든 미생물을 만들었으므로 나머지 $z_i - 1$개의 미생물은 단순하게 이 미생물을 만드는 최소 비용으로 만들면 된다.
+
+```cpp
+#include <bits/stdc++.h>
+
+using ll = long long;
+
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr), std::cout.tie(nullptr);
+
+    int n;
+    std::cin >> n;
+
+    std::vector<int> x(n + 1);
+    for (int i = 1; i <= n; i++) std::cin >> x[i];
+
+    std::vector<ll> min(n + 1);
+    std::vector<std::array<ll, 3>> edge;
+    for (int i = 1; i <= n; i++) std::cin >> min[i], edge.push_back({n + 1, i, min[i]});
+
+    for (int i = 1; i <= n; i++) {
+        for (ll z, j = 1; j <= n; j++) {
+            std::cin >> z;
+            edge.push_back({i, j, z}), min[j] = std::min(min[j], z);
+        }
+    }
+
+    ll ans = 0;
+    {
+        int root = n + 1, m = n + 1;
+        while (true) {
+            std::vector<std::array<ll, 2>> delta(m + 1, {INT64_MAX, root});
+            for (const auto &[u, v, c]: edge) {
+                if (u != v && c < delta[v][0]) {  // u -> v
+                    delta[v][0] = c, delta[v][1] = u;
+                }
+            }
+            delta[root][0] = 0;    // root
+            for (int i = 1; i <= m; i++) ans += delta[i][0];
+
+            int cnt = 0;
+            std::vector<int> cycle(m + 1, -1);
+            cycle[root] = ++cnt;
+            for (int i = 1; i <= m; i++) {
+                if (cycle[i] != -1) continue;
+                int v = i;
+                for (; cycle[v] == -1; v = delta[v][1]) cycle[v] = -2;
+                if (cycle[v] == -2) {
+                    cnt += 1;
+                    for (; cycle[v] == -2; v = delta[v][1]) cycle[v] = cnt;
+                }
+                for (v = i; cycle[v] == -2; v = delta[v][1]) cycle[v] = ++cnt;
+            }
+            if (cnt == m) break;
+
+            m = cnt;
+            for (auto &[u, v, c]: edge) {
+                c -= delta[v][0], u = cycle[u], v = cycle[v];
+            }
+            root = cycle[root];
+        }
+    }
+
+    for (int i = 1; i <= n; i++) ans += 1ll * min[i] * (x[i] - 1);
+
+    std::cout << ans;
+}
+```
+
+## 2024.10.31.
+
+### <a href = "https://www.acmicpc.net/problem/25839">BOJ 25839</a>
+
+
