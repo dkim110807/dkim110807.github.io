@@ -452,4 +452,645 @@ int main() {
 
 ### <a href = "https://www.acmicpc.net/problem/25839">BOJ 25839</a>
 
+이 문제 역시 directed mst를 구하는 문제이다. 이분 탐색을 사용하자. 문제 조건에서 전체 그래프가 root에서 각 정점으로 모두 갈 수 있음이 보장되므로 간단하게 구현할 수 있다.
+
+```cpp
+#include <bits/stdc++.h>
+
+using ll = long long;
+
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr), std::cout.tie(nullptr);
+
+    long double limit = 0;
+    std::cin >> limit;
+
+    int n, k;
+    std::cin >> n >> k;
+
+    std::vector<std::array<int, 4>> edges;
+    for (int a, b, c, d; k--; ) {
+        std::cin >> a >> b >> c >> d;
+        edges.push_back({b, a, c, d});
+    }
+
+    auto f = [&](long double x) -> bool {
+        long double sum = 0;
+        int root = 1, m = n;
+        std::vector<std::tuple<int, int, long double>> edge;
+        for (auto &[a, b, c, d]: edges) edge.emplace_back(a, b, c + d * x);
+        while (true) {
+            std::vector<std::pair<long double, int>> delta(m + 1, {1e10, root});
+            for (const auto &[u, v, c]: edge) {
+                if (u != v && c < delta[v].first) {  // u -> v
+                    delta[v].first = c, delta[v].second = u;
+                }
+            }
+            delta[root].first = 0;    // root
+            for (int i = 1; i <= m; i++) sum += delta[i].first;
+
+            int cnt = 0;
+            std::vector<int> cycle(m + 1, -1);
+            cycle[root] = ++cnt;
+            for (int i = 1; i <= m; i++) {
+                if (cycle[i] != -1) continue;
+                int v = i;
+                for (; cycle[v] == -1; v = delta[v].second) cycle[v] = -2;
+                if (cycle[v] == -2) {
+                    cnt += 1;
+                    for (; cycle[v] == -2; v = delta[v].second) cycle[v] = cnt;
+                }
+                for (v = i; cycle[v] == -2; v = delta[v].second) cycle[v] = ++cnt;
+            }
+            if (cnt == m) break;
+
+            m = cnt;
+            for (auto &[u, v, c]: edge) {
+                c -= delta[v].first, u = cycle[u], v = cycle[v];
+            }
+            root = cycle[root];
+        }
+
+        return sum + x <= limit;
+    };
+
+    long double low = 0, high = limit, ans = 0;
+    for (int rep = 100; rep--; ) {
+        long double mid = (low + high) / 2.;
+        if (f(mid)) ans = mid, low = mid;
+        else high = mid;
+    }
+
+    std::cout << std::fixed << std::setprecision(20) << ans;
+}
+```
+
+## 2024.11.01.
+
+### <a href = "https://www.acmicpc.net/problem/7907">BOJ 7907</a>
+
+## 2024.11.02.
+
+### <a href = "https://www.acmicpc.net/problem/14960">BOJ 14960</a>
+
+### <a href = "https://www.acmicpc.net/problem/17625">BOJ 17625</a>
+
+### <a href = "https://www.acmicpc.net/problem/23863">BOJ 23863</a>
+
+위와 동일한 문제이다.
+
+## 2024.11.03.
+
+### <a href = "https://www.acmicpc.net/problem/7057">BOJ 7057</a>
+
+## 2024.11.04.
+
+### <a href = "https://www.acmicpc.net/problem/10746">BOJ 10746</a>
+
+## 2024.11.05.
+
+### <a href = "https://www.acmicpc.net/problem/17517">BOJ 17517</a>
+
+## 2024.11.06.
+
+### <a href = "https://www.acmicpc.net/problem/16792">BOJ 16792</a>
+
+## 2024.11.07.
+
+### <a href = "https://www.acmicpc.net/problem/15521">BOJ 15521</a>
+
+```cpp
+#include <bits/stdc++.h>
+
+using ll = long long;
+
+constexpr int MAX = 100'001;
+
+struct Node {
+    ll min = 1ll << 61, lazy = 1ll << 61;
+
+    friend Node operator+(const Node &left, const Node &right) {
+        return {std::min(left.min, right.min)};
+    }
+} tree[4 * MAX + 4];
+
+struct Segtree {
+    void propagate(int node, int start, int end) {
+        tree[node].min = std::min(tree[node].min, tree[node].lazy);
+        if (start ^ end) {
+            for (const auto &i: {node << 1, node << 1 | 1}) {
+                tree[i].lazy = std::min(tree[i].lazy, tree[node].lazy);
+            }
+        }
+        tree[node].lazy = 1ll << 61;
+    }
+
+    void update(int node, int start, int end, int left, int right, ll v) {
+        propagate(node, start, end);
+        if (right < start || end < left) return;
+        if (left <= start && end <= right) {
+            tree[node].lazy = v;
+            propagate(node, start, end);
+            return;
+        }
+        int mid = (start + end) >> 1;
+        update(node << 1, start, mid, left, right, v), update(node << 1 | 1, mid + 1, end, left, right, v);
+        tree[node] = tree[node << 1] + tree[node << 1 | 1];
+    }
+
+    ll query(int node, int start, int end, int left, int right) {
+        propagate(node, start, end);
+        if (right < start || end < left) return 1ll << 61;
+        if (left <= start && end <= right) return tree[node].min;
+        int mid = (start + end) >> 1;
+        return std::min(query(node << 1, start, mid, left, right), query(node << 1 | 1, mid + 1, end, left, right));
+    }
+} seg;
+
+struct HLD {
+    std::vector<int> graph[MAX + 1];
+    int top[MAX + 1], in[MAX + 1], out[MAX + 1], depth[MAX + 1], sz[MAX + 1], parent[MAX + 1];
+
+    void add(int u, int v) {
+        graph[u].push_back(v);
+    }
+
+    void init(int root = 1) {
+        top[root] = root;
+
+        dfs(root);
+        dfs2(root);
+    }
+
+    void dfs(int v = 1) {
+        sz[v] = 1;
+        for (auto &nv: graph[v]) {
+            parent[nv] = v, depth[nv] = depth[v] + 1;
+            dfs(nv);
+            sz[v] += sz[nv];
+            if (sz[nv] > sz[graph[v][0]]) std::swap(nv, graph[v][0]);
+        }
+    }
+
+    void dfs2(int v = 1) {
+        static int dfs_num = 0;
+        in[v] = ++dfs_num;
+        for (const auto &nv: graph[v]) {
+            top[nv] = nv == graph[v][0] ? top[v] : nv;
+            dfs2(nv);
+        }
+        out[v] = dfs_num;
+    }
+
+    void update(int u, int v, ll c) {
+        while (top[u] != top[v]) {
+            if (depth[top[u]] < depth[top[v]]) std::swap(u, v);
+            int st = top[u];
+            seg.update(1, 1, MAX, in[st], in[u], c);
+            u = parent[st];
+        }
+        if (in[u] > in[v]) std::swap(u, v);
+        seg.update(1, 1, MAX, in[u], in[v], c);
+    }
+
+    int lca(int u, int v) {
+        for (; top[u] ^ top[v]; u = parent[top[u]])
+            if (depth[top[u]] < depth[top[v]]) std::swap(u, v);
+        return depth[u] < depth[v] ? u : v;
+    }
+} hld;
+
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr), std::cout.tie(nullptr);
+
+    int n, m, source, sink;
+    std::cin >> n >> m >> source >> sink;
+
+    std::vector<std::tuple<int, int, ll>> edge(m);
+    std::vector<std::vector<std::pair<int, ll>>> graph(n + 1);
+    for (auto &[u, v, c]: edge) {
+        std::cin >> u >> v >> c;
+        if (u > v) std::swap(u, v);
+        graph[u].emplace_back(v, c), graph[v].emplace_back(u, c);
+    }
+
+    std::vector<ll> dist_root(n + 1, 1ll << 60);
+
+    // Shortest path tree
+    {
+        std::priority_queue<std::pair<ll, int>> pq;
+        std::vector<ll> dist(n + 1, 1ll << 60);
+        pq.emplace(0, sink), dist[sink] = 0;
+
+        std::vector<int> parent(n + 1, -1);
+        while (!pq.empty()) {
+            auto [d, v] = pq.top();
+            pq.pop();
+
+            if (dist[v] < -d) continue;
+
+            for (const auto &[nv, c]: graph[v]) {
+                if (dist[nv] > -d + c) {
+                    parent[nv] = v;
+                    dist[nv] = -d + c;
+                    pq.emplace(-c + d, nv);
+                }
+            }
+        }
+
+        std::set<std::array<int, 2>> tree_edge;
+        for (int i = 1; i <= n; i++) {
+            if (i == sink) continue;
+            assert(parent[i] != -1);
+            hld.add(parent[i], i);
+            tree_edge.insert({std::min(parent[i], i), std::max(parent[i], i)});
+        }
+
+        hld.init(sink);
+
+        std::vector<std::vector<std::tuple<int, int, ll>>> upd(n + 1);
+
+        for (const auto &[u, v, c]: edge) {
+            if (tree_edge.count({u, v})) continue;  // shortest path tree edge
+            upd[hld.lca(u, v)].emplace_back(u, v, dist[u] + c + dist[v]);
+        }
+
+        auto dfs = [&](auto &&dfs, int v) -> void {
+            if (v != sink) {
+                dist_root[v] = seg.query(1, 1, MAX, hld.in[v], hld.out[v]);
+                if (dist_root[v] != 1ll << 60) dist_root[v] -= dist[v];
+            }
+            for (auto &[a, b, c]: upd[v]) hld.update(a, b, c);
+            for (const auto &nv: hld.graph[v]) {
+                dfs(dfs, nv);
+            }
+        };
+        dfs(dfs, sink);
+    }
+
+    std::priority_queue<std::pair<ll, int>> pq;
+    std::vector<ll> dist(n + 1, 1ll << 59);
+    pq.emplace(0, sink), dist[sink] = 0;
+    while (!pq.empty()) {
+        auto [d, v] = pq.top();
+        pq.pop();
+
+        if (dist[v] < -d) continue;
+
+        for (const auto &[nv, c]: graph[v]) {
+            ll cc = std::max(dist_root[nv], -d + c);
+            if (dist[nv] > cc) {
+                dist[nv] = cc;
+                pq.emplace(-cc, nv);
+            }
+        }
+    }
+
+    ll ans = dist[source];
+    if (ans >= (1ll << 55)) ans = -1;
+    std::cout << ans << "\n";
+}
+```
+
+## 2024.11.08.
+
+### <a href = "https://www.acmicpc.net/problem/19693">BOJ 19693</a>
+
+### <a href = "https://www.acmicpc.net/problem/12736">BOJ 12736</a>
+
+## 2024.11.09.
+
+### <a href = "https://www.acmicpc.net/problem/13515">BOJ 13515</a>
+
+## 2024.11.10.
+
+### <a href = "https://www.acmicpc.net/problem/13516">BOJ 13516</a>
+
+## 2024.11.11.
+
+### <a href = "https://www.acmicpc.net/problem/27293">BOJ 27293</a>
+
+$f(x) = \sum n^k$가 $k + 1$차 다항식임을 보일 수 있다. 이를 활용하면, $k + 2$개의 서로 다른 $x$에 대해 대입한 값을 알 수 있다면, 함수 $f(x)$가 유일하게 결정되고, 여기서 $f(n)$을 구하면 된다. 이는 라그랑주 보간법으로 가능하다.
+
+```cpp
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr), std::cout.tie(nullptr);
+
+    fact[0] = 1;
+    for (int i = 1; i <= 100'110; i++) fact[i] = fact[i - 1] * i;
+    inv[100'110] = fact[100'110].inv();
+    for (int i = 100'110; i >= 1; i--) inv[i - 1] = inv[i] * i;
+
+    int T;
+    for (std::cin >> T; T--;) {
+        [&]() {
+            int a, b, d;
+            std::cin >> a >> b >> d;
+
+            int n = d + 2;
+
+            std::vector<MInt> f(n + 1);
+            for (int i = 1; i <= n; i++) {
+                f[i] = f[i - 1] + MInt(i).pow(d);
+            }
+
+            auto g = [&](MInt x) -> MInt {
+                MInt ans = 0;
+                std::vector<MInt> prefix(n + 1, 1), suffix(n + 2, 1);
+                for (int i = 1; i <= n; i++) prefix[i] = prefix[i - 1] * (x - i);
+                for (int i = n; i >= 1; i--) suffix[i] = suffix[i + 1] * (x - i);
+                for (int i = 1; i <= n; i++) {
+                    if ((n - i) & 1) ans -= f[i] * prefix[i - 1] * suffix[i + 1] * inv[n - i] * inv[i - 1];
+                    else ans += f[i] * prefix[i - 1] * suffix[i + 1] * inv[n - i] * inv[i - 1];
+                }
+                return ans;
+            };
+
+            std::cout << g(b) - g(a - 1) << "\n";
+        }();
+    }
+}
+```
+
+## 2024.11.12.
+
+### <a href = "https://www.acmicpc.net/problem/18539">BOJ 18539</a>
+
+```cpp
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr), std::cout.tie(nullptr);
+
+    int k;
+    std::cin >> k;
+
+    std::vector<MInt> a(k), b(k);
+    for (int x, i = 0; i < k; i++) {
+        std::cin >> x;
+        a[k - 1 - i] = x;
+    }
+
+    for (int x, i = 0; i < k; i++) {
+        std::cin >> x;
+        b[i] = x;
+    }
+
+    std::vector<T> bb(k + 1);
+    for (int i = 0; i < k; i++) bb[i] = kitamasa(a, b[k - 1].v + 1 - b[i].v);
+    bb[k] = kitamasa(a, b[k - 1].v + 1);
+
+    Matrix<MInt> m(k, k + 1);
+    for (int i = 0; i <= k; i++) {
+        for (int j = 0; j < k; j++) {
+            m[j][i] = bb[i][j];
+        }
+    }
+    m.rref();
+
+    for (int i = 0; i < k; i++) {
+        std::cout << m[i][k] / m[i][i] << " ";
+    }
+}
+```
+
+## 2024.11.13.
+
+### <a href = "https://www.acmicpc.net/problem/15527">BOJ 15527</a>
+
+## 2024.11.14.
+
+### <a href = "https://www.acmicpc.net/problem/19562">BOJ 19562</a>
+
+## 2024.11.15.
+
+### <a href = "https://www.acmicpc.net/problem/21086">BOJ 21086</a>
+
+## 2024.11.16.
+
+### <a href = "https://www.acmicpc.net/problem/18526">BOJ 18526</a>
+
+이 문제에서는 문제 조건인 '어느 원도 교차하지 않는다'가 매우 중요하다. 
+
+## 2024.11.17.
+
+### <a href = "https://www.acmicpc.net/problem/19936">BOJ 19936</a>
+
+### <a href = "https://www.acmicpc.net/problem/15994">BOJ 15994</a>
+
+### <a href = "https://www.acmicpc.net/problem/21594">BOJ 21594</a>
+
+## 2024.11.18.
+
+### <a href = "https://www.acmicpc.net/problem/10791">BOJ 10791</a>
+
+### <a href = "https://www.acmicpc.net/problem/25283">BOJ 25283</a>
+
+### <a href = "https://www.acmicpc.net/problem/30523">BOJ 30523</a>
+
+다음이 성립한다.
+
+$$A \oplus B = A + B - 2 (A \land B), A \lor B = A + B - (A \land B)$$
+
+그러면, 일부 $A \oplus B$를 $A \lor B$로 바꾸었을 때, 가장 큰 이득을 얻기 위해서는 $A \land B$가 큰 것 부터 선택하면 된다. 이를 위해 $A \land B$를 구해야 한다. 이는 fwht and로 간단하게 가능하다.
+
+```cpp
+#include <bits/stdc++.h>
+
+using ll = long long;
+
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr), std::cout.tie(nullptr);
+
+    int n;
+    std::cin >> n;
+
+    ll p;
+    std::cin >> p;
+
+    auto fwht = [&](std::vector<ll> &v, bool inv = false) {
+        int n = (int) v.size();
+
+        for (int s = 2, h = 1; s <= n; s <<= 1, h <<= 1) {
+            for (int l = 0; l < n; l += s) {
+                for (int i = 0; i < h; i++) {
+                    v[l + i] += v[l + h + i] * (inv ? -1 : 1);
+                }
+            }
+        }
+    };
+
+    std::vector<std::array<int, 2>> v(17);
+    std::vector<ll> a(1 << 17), b(1 << 17);
+    for (int x, i = n; i--;) {
+        std::cin >> x;
+        a[x] += 1;
+        for (int j = 0; j < 17; j++) v[j][(x >> j) & 1] += 1;
+    }
+
+    ll ans = 0;
+    for (int x, i = n; i--;) {
+        std::cin >> x;
+        b[x] += 1;
+        for (int j = 0; j < 17; j++) ans += (1ll << j) * v[j][(~x >> j) & 1];
+    }
+
+    fwht(a), fwht(b);
+    for (int i = 0; i < 1 << 17; i++) a[i] *= b[i];
+    fwht(a, true);
+
+    for (int i = (1 << 17) - 1; i >= 0; i--) {
+        auto min = std::min(a[i], p);
+        ans += i * min;
+        p -= min;
+    }
+
+    std::cout << ans << "\n";
+}
+```
+
+### <a href = "https://www.acmicpc.net/problem/18522">BOJ 18522</a>
+
+각 슬리퍼의 방향을 모듈로 $4$에서 생각해보면, 한 쌍의 슬리퍼를 규칙에 따라 회전시킨 이후에도 총 합이 유지됨을 알 수 있다. 그리고, 적절히 잘 하면 하나의 슬리퍼를 제외하고는 모두 원하는 방향을 맞출 수 있다. 나머지 하나의 슬리퍼는 합에 의해서 자동으로 결정된다.
+
+그러면, 각 칸 $(x, y)$를 $(x + y)$의 기우성에 따라 나누어주면 이는 이분 그래프를 형성한다. 일단 방향을 무시하고 슬리퍼를 연결하자. 그러면 여기서 최대 매칭을 찾아주면 방향을 무시한 상황에서 최대로 매칭한 슬리퍼의 개수가 된다. 하지만 방향 조건에 의해서 마지막 하나의 슬리퍼는 방향이 맞지 않을 수 있다. 
+
+만약, 이 매칭이 완전 매칭이 아닌 경우에는 추가적인 처리 필요 없이 최대 매칭이 답이 된다. 따라서, 완전 매칭인 경우만 마지막 하나의 슬리퍼의 방향이 맞는지를 검사하고, 방향이 맞지 않는다면 답에서 $1$을 빼주면 된다.
+
+```cpp
+#include <bits/stdc++.h>
+
+using ll = long long;
+
+struct Hopcroft {
+    int n;
+
+    Hopcroft(int n) : n(n) {}
+
+    int lvl[MAX + 1], A[MAX + 1], B[MAX + 1];
+    bool used[MAX + 1];
+
+    std::set<int> graph[MAX + 1];
+
+    void bfs() {
+        std::queue<int> q;
+        for (int i = 0; i < n; i++) {
+            if (!used[i]) {
+                q.push(i);
+                lvl[i] = 0;
+            } else lvl[i] = INF;
+        }
+        while (!q.empty()) {
+            auto v = q.front();
+            q.pop();
+
+            for (const auto &nv: graph[v]) {
+                if (B[nv] != -1 && lvl[B[nv]] == INF) {
+                    lvl[B[nv]] = lvl[v] + 1;
+                    q.push(B[nv]);
+                }
+            }
+        }
+    }
+
+    bool dfs(int v) {
+        for (const auto &nv: graph[v]) {
+            if (B[nv] == -1 || (lvl[B[nv]] == lvl[v] + 1 && dfs(B[nv]))) {
+                used[v] = true;
+                A[v] = nv, B[nv] = v;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    int karp() {
+        int match = 0;
+        std::fill(A, A + MAX, -1), std::fill(B, B + MAX, -1);
+        while (true) {
+            bfs();
+            int flow = 0;
+            for (int i = 0; i < n; i++) if (!used[i] && dfs(i)) flow += 1;
+            match += flow;
+            if (flow == 0) break;
+        }
+        return match;
+    }
+};
+
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr), std::cout.tie(nullptr);
+
+    int n, m;
+    std::cin >> n >> m;
+
+    Hopcroft match(n * m + 3);
+
+    auto id = [&](int x, int y) {
+        return (x - 1) * m + y;
+    };
+
+    auto add = [&](int x1, int y1, int x2, int y2) {
+        match.graph[id(x1, y1)].insert(id(x2, y2));
+    };
+
+    int sum = 0;
+    std::vector a(n + 1, std::vector<char>(m + 1));
+    std::vector d(n + 1, std::vector<int>(m + 1));
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            char c;
+            std::cin >> a[i][j] >> c;
+            d[i][j] = c == '^' ? 0 : c == '>' ? 1 : c == 'v' ? 2 : 3;
+            sum = (sum + d[i][j]) % 4;
+        }
+    }
+
+    for (int i = 1; i <= n; i++) {
+        for (int j = i % 2 ? 1 : 2; j <= m; j += 2) {
+            for (const auto &[x, y]: {std::array<int, 2>{i, j + 1}, {i, j - 1}, {i - 1, j}, {i + 1, j}}) {
+                if (x < 1 || x > n || y < 1 || y > m || a[i][j] == a[x][y]) continue;
+                add(i, j, x, y);
+            }
+        }
+    }
+
+    int ans = match.karp();
+
+    if (ans * 2 == n * m) {
+        auto inv = [&](int id) -> std::array<int, 2> {
+            return {(id - 1) / m + 1, (id - 1) % m + 1};
+        };
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = i % 2 ? 1 : 2; j <= m; j += 2) {
+                auto [x, y] = inv(match.A[id(i, j)]);
+                if (x == i - 1) {
+                    sum = (sum + 2) % 4;
+                } else if (x == i + 1) {
+                    sum = (sum + 2) % 4;
+                } else if (y == j - 1) {
+                } else if (y == j + 1) {
+                } else {
+                    assert(false);
+                }
+            }
+        }
+        if ((sum % 4 + 4) % 4 != 0) ans -= 1;
+    }
+
+    std::cout << ans << "\n";
+}
+```
+
+### <a href = "https://www.acmicpc.net/problem/24906">BOJ 24906</a>
+
+This problem is left as an exercise for readers. 
+
+### <a href = "https://www.acmicpc.net/problem/14508">BOJ 14508</a>
+
 
