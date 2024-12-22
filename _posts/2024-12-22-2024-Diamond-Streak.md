@@ -339,4 +339,34 @@ int main() {
 
 ### <a href = "https://www.acmicpc.net/problem/3906">BOJ 3906</a>
 
-문제를 해석해보면, 다각형이 star-shaped가 되기 위해서는 
+문제를 해석해보면, 다각형이 star-shaped가 되기 위해서는 다각형의 모서리를 직선으로 생각했을 때, 이들의 반평면 교집합이 존재하면 된다. 문제의 범위도 작은데 왜 D3인지는 잘...
+
+```cpp
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr), std::cout.tie(nullptr);
+
+    for (int n;;) {
+        std::cin >> n;
+
+        if (n == 0) break;
+
+        std::vector<Point> v(n);
+        for (auto &[x, y]: v) std::cin >> x >> y;
+
+        std::vector<Halfplane> hp;
+        for (int i = 0; i < n; i++) {
+            hp.emplace_back(v[i], v[(i + 1) % n]);
+        }
+
+        std::cout << !intersect(hp).empty() << "\n";
+    }
+}
+```
+
+## 2024.10.28.
+
+### <a href = "https://www.acmicpc.net/problem/16857">BOJ 16857</a>
+
+## 2024.10.29.
+
