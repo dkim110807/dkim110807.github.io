@@ -1093,4 +1093,308 @@ This problem is left as an exercise for readers.
 
 ### <a href = "https://www.acmicpc.net/problem/14508">BOJ 14508</a>
 
+## 2024.11.19.
 
+### <a href = "https://www.acmicpc.net/problem/14447">BOJ 14447</a>
+
+### <a href = "https://www.acmicpc.net/problem/21993">BOJ 21993</a>
+
+## 2024.11.20.
+
+### <a href = "https://www.acmicpc.net/problem/13408">BOJ 13408</a>
+
+문제의 제한 조건이 매우 작기 때문에 어지간한 풀이는 통과한다. 하지만, 구현이 매우 매우 어렵다. 기본적으로 이 문제는 겹치는 면적이 unimodal하므로 삼분 탐색을 사용하면 된다. (최댓값의 경우 여러 위치에서 존재할 수 있지만 상관이 없다.) 이제 우리는 원의 중심이 주어졌을 때 교집합의 넓이를 구하면 된다. 여기가 매우 매우 귀찮다. 열심히 하자.
+
+```cpp
+#include <bits/stdc++.h>
+
+using ll = long long;
+
+long double eps = 1e-9;
+
+struct Point {
+    long double x, y;
+
+    friend int ccw(const Point &a, const Point &b, const Point &c) {
+        auto d = (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x);
+        return (d > eps) - (d < -eps);
+    }
+
+    friend long double dist(const Point &a, const Point &b) {
+        return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+    }
+};
+
+int main() {
+    std::ios_base::sync_with_stdio(false);
+
+    int n, r;
+    std::cin >> n >> r;
+
+    std::vector<Point> poly(n);
+    long double xmin = 150, xmax = -150;
+    for (auto &[x, y]: poly) std::cin >> x >> y, xmin = std::min(xmin, x), xmax = std::max(xmax, x);
+
+    auto hull = [&](std::vector<Point> &v) {
+        if (v.empty()) return;
+
+        std::swap(v[0], *std::max_element(v.begin(), v.end(), [&](const Point &a, const Point &b) {
+            if (std::abs(a.x - b.x) < eps) return a.y < b.y;
+            return a.x < b.x;
+        }));
+        std::sort(v.begin() + 1, v.end(), [&](const Point &a, const Point &b) {
+            int c = ccw(v[0], a, b);
+            if (c != 0) return c > 0;
+            return dist(v[0], a) < dist(v[0], b);
+        });
+
+        if (v.size() < 3) return;
+
+        std::vector<Point> u;
+        u.push_back(v[0]), u.push_back(v[1]);
+        for (int i = 2; i < v.size(); i++) {
+            while (u.size() >= 2 && ccw(u[u.size() - 2], u.back(), v[i]) < 0) u.pop_back();
+            u.push_back(v[i]);
+        }
+
+        u.swap(v);
+    };
+
+    auto f = [&](long double x0, long double y0) -> long double {
+        decltype(poly) p;
+        for (auto &[x, y]: poly) if ((x - x0) * (x - x0) + (y - y0) * (y - y0) <= r * r) p.push_back({x, y});
+        for (int i = 0, j = 1; i < n; i++, j = (j + 1) % n) {
+            // ax + by = c
+            long double a = poly[j].y - poly[i].y, b = poly[i].x - poly[j].x, c = a * poly[i].x + b * poly[i].y;
+            // (x - x0)^2 + (y - y0)^2 == r^2
+
+            long double sq =
+                    (-2 * a * c - 2 * b * b * x0 + 2 * a * b * y0) * (-2 * a * c - 2 * b * b * x0 + 2 * a * b * y0) -
+                    4 * (a * a + b * b) * (c * c - b * b * r * r + b * b * x0 * x0 - 2 * b * c * y0 + b * b * y0 * y0);
+
+            if (std::abs(b) < eps) {
+                sq = r * r - (x0 - poly[i].x) * (x0 - poly[i].x);
+                if (std::abs(sq) < eps) sq = 0;
+                if (sq >= eps) {
+                    for (auto &it: {std::sqrt(sq), -std::sqrt(sq)}) {
+                        long double x = poly[i].x, y = y0 + it;
+                        if ((poly[i].y <= y && y <= poly[j].y) || (poly[j].y <= y && y <= poly[i].y)) {
+                            p.push_back({x, y});
+                        }
+                    }
+                }
+                continue;
+            }
+
+            if (std::abs(sq) < eps) {
+                long double x = (2 * a * c + 2 * b * b * x0 - 2 * a * b * y0) / (2 * (a * a + b * b)), y;
+                if (std::abs(b) < eps) {
+                    y = y0;
+                } else {
+                    y = (c - a * x) / b;
+                }
+                if ((poly[i].x <= x && x <= poly[j].x) || (poly[j].x <= x && x <= poly[i].x)) {
+                    p.push_back({x, y});
+                }
+            } else if (sq > eps) {
+                for (auto &it: {std::sqrt(sq), -std::sqrt(sq)}) {
+                    assert(std::abs(a * a + b * b) >= eps);
+                    long double x = (2 * a * c + 2 * b * b * x0 - 2 * a * b * y0 + it) / (2 * (a * a + b * b)), y;
+                    if (std::abs(b) < eps) {
+                        assert(false);
+                    } else {
+                        y = (c - a * x) / b;
+                    }
+                    if ((poly[i].x <= x && x <= poly[j].x) || (poly[j].x <= x && x <= poly[i].x)) {
+                        p.push_back({x, y});
+                    }
+                }
+            }
+        }
+
+        hull(p);
+
+        long double ans = 0;
+        for (int i = 0, j = 1; i < p.size(); i++, j = (j + 1) % int(p.size())) {
+            long double ai = std::atan2(p[i].y - y0, p[i].x - x0) + M_PI,
+                    aj = std::atan2(p[j].y - y0, p[j].x - x0) + M_PI;
+            long double theta;
+
+            if (aj >= ai) theta = (ai + aj) / 2.;
+            else {
+                aj += 2 * M_PI;
+                theta = (ai + aj) / 2.;
+            }
+
+            long double x = x0 + r * std::cos(theta - M_PI), y = y0 + r * std::sin(theta - M_PI);
+
+            int sw = 1;
+            for (int ii = 0, jj = 1; ii < n; ii++, jj = (jj + 1) % n) {
+                if (ccw(poly[ii], {x, y}, poly[jj]) > 0) sw = 0;
+            }
+
+            if (sw == 0) {
+                ans += 0.5 * std::abs((p[i].x - x0) * (p[j].y - y0) - (p[i].y - y0) * (p[j].x - x0));
+            } else {
+                auto angle = aj - ai;
+                ans += 0.5 * angle * r * r;
+            }
+        }
+
+        return ans;
+    };
+
+    auto g = [&](long double x) -> long double {
+        long double low = 150, high = -150, ans = 0;
+
+        for (int i = 0, j = 1; i < n; i++, j = (j + 1) % n) {
+            // ax + by = c
+            long double a = poly[j].y - poly[i].y, b = poly[i].x - poly[j].x, c = a * poly[i].x + b * poly[i].y;
+
+            if ((poly[i].x <= x && x <= poly[j].x) || (poly[j].x <= x && x <= poly[i].x)) {
+                if (std::abs(b) < eps) {
+                    low = std::min(low, poly[i].y), low = std::min(low, poly[j].y);
+                    high = std::max(high, poly[i].y), high = std::max(high, poly[j].y);
+                } else {
+                    long double y = (c - a * x) / b;
+                    low = std::min(low, y), high = std::max(high, y);
+                }
+            }
+        }
+
+        for (int rep = 50; rep--;) {
+            long double p = (low * 2 + high) / 3., q = (low + high * 2) / 3.;
+            auto pv = f(x, p), qv = f(x, q);
+            if (pv <= qv) low = p;
+            else high = q;
+
+            ans = std::max({ans, pv, qv});
+        }
+
+        return ans;
+    };
+
+    long double low = xmin, high = xmax, ans = 0;
+    for (int rep = 50; rep--;) {
+        long double p = (low * 2 + high) / 3., q = (low + high * 2) / 3.;
+        auto pv = g(p), qv = g(q);
+        if (pv <= qv) low = p;
+        else high = q;
+        ans = std::max({ans, pv, qv});
+    }
+
+    std::cout << std::fixed << std::setprecision(15) << ans << "\n";
+}
+```
+
+## 2024.11.21.
+
+### <a href = "https://www.acmicpc.net/problem/20306">BOJ 20306</a>
+
+가장 먼저 생각나는 풀이는 단순하게 이분 탐색과 볼록 다각형 내부점 판별을 사용하는 풀이다. 아쉽게 시간 제한과 오버플로우로 통과하기 힘들다. 다른 방법은 중심의 위치가 고정이라는 사실을 이용해서 각도로 스위핑하면 된다. 이 풀이 역시 오버플로우가 발생하여 파이썬으로 간신히 통과하였다. 언어 번역은 친절한 GPT가 도워줬다.
+
+```py
+import sys
+from functools import cmp_to_key
+
+input = sys.stdin.readline
+
+class Point2D:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __add__(self, other):
+        return Point2D(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other):
+        return Point2D(self.x - other.x, self.y - other.y)
+
+    def __mul__(self, c):
+        return Point2D(self.x * c, self.y * c)
+
+    @staticmethod
+    def ccw(a, b, c):
+        d = (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x)
+        return (d > 0) - (d < 0)
+
+    @staticmethod
+    def dist(a, b):
+        return (a.x - b.x) ** 2 + (a.y - b.y) ** 2
+
+    @staticmethod
+    def cross(p, q):
+        return p.x * q.y - p.y * q.x
+
+    def half(self):
+        return int(self.y < 0 or (self.y == 0 and self.x < 0))
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+def main():
+    n, m, k = map(int, input().split())
+    
+    cx, cy = map(int, input().split())
+    center = Point2D(cx, cy)
+
+    p = []
+    for _ in range(n):
+        x, y = map(int, input().split())
+        p.append(Point2D(x, y))
+
+    q = []
+    for _ in range(m):
+        x, y = map(int, input().split())
+        point = Point2D(x, y)
+        if point == center:
+            k -= 1
+        else:
+            q.append(point)
+
+    def point_cmp(a, b):
+        p_diff = a - center
+        q_diff = b - center
+        if p_diff.half() != q_diff.half():
+            return p_diff.half() - q_diff.half()
+        return (Point2D.cross(p_diff, q_diff) > 0) - (Point2D.cross(p_diff, q_diff) < 0)
+
+    q.sort(key=cmp_to_key(point_cmp))
+
+    v = [[] for _ in range(n)]
+    i, j = 0, 0
+    while j < len(q):
+        while j < len(q) and Point2D.ccw(p[i], center, q[j]) <= 0 and Point2D.ccw(q[j], center, p[(i + 1) % n]) < 0:
+            v[i].append(q[j])
+            j += 1
+        i = (i + 1) % n
+
+    for i in range(n): p[i] = p[i] - center    
+        
+    ans = []
+    for i in range(n):
+        for x in v[i]:
+            x = x - center
+            def f(y):
+                a = p[i] * (y + 1)
+                b = p[(i + 1) % n] * (y + 1)
+                return Point2D.ccw(a, x, b) <= 0
+
+            low, high = 0, 10 ** 19
+            s = 1 << 100
+            while low <= high:
+                mid = (low + high) // 2
+                if f(mid):
+                    s = mid
+                    high = mid - 1
+                else:
+                    low = mid + 1
+            ans.append(s)
+
+    ans.sort()
+    print(0 if not ans or k == 0 else ans[k - 1])
+
+if __name__ == "__main__":
+    main()
+
+```
