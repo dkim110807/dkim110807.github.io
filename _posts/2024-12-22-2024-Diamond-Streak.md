@@ -300,4 +300,43 @@ Todo.
 
 ### <a href = "https://www.acmicpc.net/problem/1616">BOJ 1616</a>
 
+문제의 답은 de Bruijn 수열이다. 또는 <a href = "https://www.acmicpc.net/problem/28077">사탕 팔찌</a> 문제처럼 처리하면 된다. 이 방법은 최적화를 많이 해야 한다고 한다.
 
+```cpp
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr), std::cout.tie(nullptr);
+
+    int k, m;
+    std::cin >> k >> m;
+
+    std::vector<int> ans;
+    auto f = [&](auto &&f, int t, int p) -> void {
+        if (t > m) {
+            if (m % p == 0) {
+                for (int i = 1; i < p + 1; i++) ans.push_back(a[i]);
+            }
+        } else {
+            a[t] = a[t - p];
+            f(f, t + 1, p);
+            for (int i = a[t - p] + 1; i < k; i++) {
+                a[t] = i;
+                f(f, t + 1, t);
+            }
+        }
+    };
+    f(f, 1, 1);
+
+    for (auto &x: ans) std::cout << x << " ";
+}
+```
+
+## 2024.10.26.
+
+### <a href = "https://www.acmicpc.net/problem/1763">BOJ 1763</a>
+
+## 2024.10.27.
+
+### <a href = "https://www.acmicpc.net/problem/3906">BOJ 3906</a>
+
+문제를 해석해보면, 다각형이 star-shaped가 되기 위해서는 
