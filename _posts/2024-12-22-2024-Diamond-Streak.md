@@ -1398,3 +1398,513 @@ if __name__ == "__main__":
     main()
 
 ```
+
+### <a href = "https://www.acmicpc.net/problem/23798">BOJ 23798</a>
+
+길이가 $2n$인 올바른 괄호 문자열의 개수는 $C_n$으로 유명하다. 이 문제는 그의 변형이다. 카탈랑 수열 유도하는 방식과 비슷하게 열심히 격자를 그리면서 풀어보면 쉽게 유도된다. 세그는 누적합의 최솟값을 저장해야 하는 것을 잊지 말자.
+
+```cpp
+#include <bits/stdc++.h>
+
+using ll = long long;
+using MInt = ModInt<1'000'000'007>;
+
+constexpr int MAX = 300'003;
+
+struct Node {
+    int sum, min;
+
+    friend Node operator+(const Node &left, const Node &right) {
+        return {left.sum + right.sum, std::min(left.min, left.sum + right.min)};
+    }
+} tree[4 * MAX + 4];
+
+void init(const std::vector<int> &v, int node, int start, int end) {
+    if (start == end) {
+        tree[node] = {v[start], std::min(0, v[start])};
+        return;
+    }
+    int mid = (start + end) >> 1;
+    init(v, node << 1, start, mid), init(v, node << 1 | 1, mid + 1, end);
+    tree[node] = tree[node << 1] + tree[node << 1 | 1];
+}
+
+void update(int node, int start, int end, int idx, int v) {
+    if (idx < start || end < idx) return;
+    if (start == end) {
+        tree[node] = {v, v};
+        return;
+    }
+    int mid = (start + end) >> 1;
+    update(node << 1, start, mid, idx, v), update(node << 1 | 1, mid + 1, end, idx, v);
+    tree[node] = tree[node << 1] + tree[node << 1 | 1];
+}
+
+Node query(int node, int start, int end, int left, int right) {
+    if (right < start || end < left || left > right) return {0, 0};
+    if (left <= start && end <= right) return tree[node];
+    int mid = (start + end) >> 1;
+    return query(node << 1, start, mid, left, right) + query(node << 1 | 1, mid + 1, end, left, right);
+}
+
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr), std::cout.tie(nullptr);
+
+    int n, m;
+    std::cin >> n;
+
+    std::string s;
+    std::cin >> s;
+
+    std::vector<int> v(n + 1);
+    for (int i = 1; i <= n; i++) v[i] = s[i - 1] == '(' ? 1 : -1;
+
+    std::vector<MInt> fact(n << 1 | 1, 1), inv(n << 1 | 1);
+    for (int i = 1; i <= 2 * n; i++) fact[i] = fact[i - 1] * i;
+    inv[n << 1] = fact[n << 1].inv();
+    for (int i = 2 * n; i >= 1; i--) inv[i - 1] = inv[i] * i;
+
+    auto C = [&](int n, int r) -> MInt {
+        if (r < 0 || n < r) return 0;
+        return fact[n] * inv[n - r] * inv[r];
+    };
+
+    init(v, 1, 1, n);
+
+    std::cin >> m;
+    for (int op, k, l, r; m--;) {
+        std::cin >> op;
+
+        if (op == 1) {
+            std::cin >> k;
+            v[k] = v[k] == 1 ? -1 : 1;
+            update(1, 1, n, k, v[k]);
+        } else if (op == 2) {
+            std::cin >> l >> r;
+            Node left = query(1, 1, n, 1, l - 1), right = query(1, 1, n, r + 1, n);
+            int a = left.sum, b = -right.sum;
+            if (left.min < 0 || b + right.min < 0 || (r - l + 1) % 2 != std::abs(b - a) % 2) {
+                std::cout << 0 << "\n";
+                continue;
+            }
+            int x = (r - l + 1 + b - a) / 2, y = (r - l + 1) - x;
+            std::cout << C(x + y, x) - C(x + y, x + a + 1) << "\n";
+        } else {
+            assert(false);
+        }
+    }
+}
+```
+
+## 2024.11.22.
+
+### <a href = "https://www.acmicpc.net/problem/28164">BOJ 28164</a>
+
+풀이는 크게 $2$가지가 가능하다.
+
+#### Solution 1
+
+#### Solution 2
+
+## 2024.11.23.
+
+### <a href = "https://www.acmicpc.net/problem/23714">BOJ 23714</a>
+
+## 2024.11.24.
+
+### <a href = "https://www.acmicpc.net/problem/23708">BOJ 23708</a>
+
+### <a href = "https://www.acmicpc.net/problem/17624">BOJ 17624</a>
+
+매우 유명한 dp 문제이다. Flower's Land와 비슷하다.
+
+## 2024.11.25.
+
+### <a href = "https://www.acmicpc.net/problem/23712">BOJ 23712</a>
+
+### <a href = "https://www.acmicpc.net/problem/22879">BOJ 22879</a>
+
+### <a href = "https://www.acmicpc.net/problem/32773">BOJ 32773</a>
+
+이 문제가 왜 PS 대회에 나왔는지 모르겠다. 물리학 문제다. 
+
+## 2024.11.26.
+
+### <a href = "https://www.acmicpc.net/problem/21084">BOJ 21084</a>
+
+### <a href = "https://www.acmicpc.net/problem/13318">BOJ 13318</a>
+
+## 2024.11.27.
+
+### <a href = "https://www.acmicpc.net/problem/1216">BOJ 1216</a>
+
+문제 풀이 과정에서 문제 해석이 가장 어렵다. 문제를 요약하면 다음과 같다.
+
+- $1$번 쿼리. 정점 $u$와 $v$를 **일반**도로로 연결한다. (일반 도로는 철거되는 경우가 없다.)
+- $2$번 쿼리. 정점 $u$와 $v$를 **고속**도로로 연결한다. **고속**도로는 포레스트를 이루어야 하며, 이를 만족하지 않는 경우에는 연결하지 않는다.
+- $3$번 쿼리. 정점 $u$와 $v$를 연결하는 고속도로가 있는 경우, 이를 철거한다.
+- $4$번 쿼리. 입력으로 정점을 왜 주는지 모르겠다. 모든 정점의 편한 정도를 출력한다. 즉, $1$번 정점과 연결된 정점들의 힘든 정도의 합을 구하면 된다.
+- $5$번 쿼리. 정점 $u$와 $v$의 편한 정도를 출력한다. 왜...?
+- $6$번 쿼리. 정점 $u$와 $v$의 경로에 있는 모든 정점의 편한 정도를 출력한다. 즉, $u$와 $v$가 $1$번 정점과 연결되어 있지 않은 경우 답은 $0$이며 고속도로에서 연결이 되어 있으므로, 나머지는 그냥 경로 쿼리의 2배이다.
+
+$1$번 쿼리와 $4$번 쿼리를 처리하기 위해, Smaller to Larger를 사용하였다. 꼭 필요하지는 않은 듯 하다. 나머지 쿼리는 평범한 분리 집합과 링크-컷으로 처리 가능하다.
+
+```cpp
+#include <bits/stdc++.h>
+
+using ll = long long;
+
+const int MAX = 500'005;
+
+struct Node {
+    Node *l, *r, *p;
+    int sz;
+    bool inv;
+
+    ll v, sum;
+
+    Node() : l(nullptr), r(nullptr), p(nullptr), sz(1), v(0), sum(0), inv(false) {}
+
+    friend void pull(Node *x) {
+        x->sz = 1;
+        x->sum = x->v;
+        if (x->l) x->sz += x->l->sz, x->sum += x->l->sum;
+        if (x->r) x->sz += x->r->sz, x->sum += x->r->sum;
+    }
+
+    friend void push(Node *x) {
+        if (x->inv) {
+            std::swap(x->l, x->r);
+            if (x->l) x->l->inv ^= 1;
+            if (x->r) x->r->inv ^= 1;
+            x->inv = false;
+        }
+    }
+
+} tree[MAX + 11];
+
+struct LCT {
+    bool isRoot(Node *x) {
+        return (x->p == nullptr || (x->p->l != x && x->p->r != x));
+    }
+
+    void rotate(Node *x) {
+        Node *p = x->p;
+        push(p), push(x);
+        if (x == p->l) {
+            p->l = x->r, x->r = p;
+            if (p->l) p->l->p = p;
+        } else {
+            p->r = x->l, x->l = p;
+            if (p->r) p->r->p = p;
+        }
+        x->p = p->p, p->p = x;
+        if (x->p) {
+            if (p == x->p->l) x->p->l = x;
+            else if (p == x->p->r) x->p->r = x;
+        }
+        pull(p), pull(x);
+    }
+
+    void splay(Node *x) {
+        push(x);
+        while (!isRoot(x)) {
+            Node *p = x->p;
+            if (!isRoot(p)) push(p->p);
+            push(p), push(x);
+            if (!isRoot(p)) {
+                if ((x == p->l) == (p == p->p->l)) rotate(p);
+                else rotate(x);
+            }
+            rotate(x);
+        }
+        push(x);
+    }
+
+    Node *access(Node *x) {
+        splay(x);
+        x->r = nullptr;
+        pull(x);
+
+        Node *ret = x;
+        while (x->p) {
+            Node *y = x->p;
+            ret = y;
+            splay(y);
+            y->r = x;
+            pull(y);
+            splay(x);
+        }
+        return ret;
+    }
+
+    void cut(Node *x) {
+        access(x);
+        x->l->p = nullptr, x->l = nullptr;
+        pull(x);
+    }
+
+    Node *lca(Node *x, Node *y) {
+        access(x);
+        return access(y);
+    }
+
+    Node *root(Node *x) {
+        access(x);
+        while (x->l) x = x->l;
+        splay(x);
+        return x;
+    }
+
+    Node *parent(Node *x) {
+        access(x);
+        x = x->l;
+        if (!x) return nullptr;
+        while (x->r) x = x->r;
+        splay(x);
+        return x;
+    }
+
+    int depth(Node *x) {
+        access(x);
+        if (x->l) return x->l->sz;
+        return 0;
+    }
+
+    void makeRoot(Node *x) {
+        access(x), splay(x);
+        x->inv ^= 1;
+    }
+
+    bool connected(Node *x, Node *y) {
+        return root(x) == root(y);
+    }
+
+    // make x -> p
+    void link(Node *x, Node *p) {
+        auto xx = root(p);
+        makeRoot(x), makeRoot(p);
+        access(x), access(p);
+        x->l = p, p->p = x;
+        pull(x);
+        makeRoot(xx);
+    }
+
+    void update(Node *x, ll v) {
+        splay(x);
+        x->v = v;
+        pull(x);
+    }
+
+    ll query(Node *x, Node *y) {
+        Node *p = lca(y, x);
+        access(x), splay(p);
+        ll sum = p->v;
+        if (p->r) sum += p->r->sum;
+        access(y), splay(p);
+        if (p->r) sum += p->r->sum;
+        return sum;
+    }
+} lct;
+
+struct union_find {
+    std::array<int, 121'612> p;
+    std::array<std::vector<int>, 121'612> sz;
+
+    union_find() {
+        for (int i = 0; i < 121612; i++) sz[i].push_back(i);
+        std::iota(p.begin(), p.end(), 0);
+    }
+
+    int find(int x) {
+        return x == p[x] ? x : p[x] = find(p[x]);
+    }
+
+    bool merge(int u, int v) {
+        u = find(u), v = find(v);
+        if (u == v) return false;
+        if (sz[u].size() < sz[v].size()) std::swap(u, v);
+        p[v] = u;
+        sz[u].insert(sz[u].end(), sz[v].begin(), sz[v].end());
+        sz[v].clear();
+        return true;
+    }
+} uf;
+
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr), std::cout.tie(nullptr);
+
+    int n, m;
+    std::cin >> n >> m;
+
+    std::vector<ll> hard(n + 1), easy(n + 1);
+    for (int i = 1; i <= n; i++) std::cin >> hard[i];
+
+    easy[1] = hard[1];
+    lct.update(tree + 1, easy[1]);
+
+    ll sum = std::accumulate(hard.begin() + 2, hard.end(), 0ll);
+    auto connect_road = [&](int u, int v) {
+        bool a = uf.find(1) == uf.find(u), b = uf.find(1) == uf.find(v);
+        if (uf.find(u) == uf.find(v)) return;
+        if (a && !b) {
+            for (auto &x: uf.sz[uf.find(v)]) lct.update(tree + x, hard[x]), sum -= hard[x], easy[x] = hard[x];
+        } else if (!a && b) {
+            for (auto &x: uf.sz[uf.find(u)]) lct.update(tree + x, hard[x]), sum -= hard[x], easy[x] = hard[x];
+        }
+        uf.merge(u, v);
+    };
+
+    for (int u, v, i = m; i--;) {
+        std::cin >> u >> v;
+        connect_road(u, v);
+    }
+
+    int q;
+    std::cin >> q;
+    for (int op, u, v; q--;) {
+        std::cin >> op >> u >> v;
+
+        if (op == 1) {
+            connect_road(u, v);
+        } else if (op == 2) {
+            if (uf.find(u) != uf.find(v) || lct.connected(tree + u, tree + v)) std::cout << "-1\n";
+            else {
+                lct.link(tree + u, tree + v);
+            }
+        } else if (op == 3) {
+            lct.makeRoot(tree + u);
+            if (lct.parent(tree + v) != tree + u) std::cout << "-1\n";
+            else lct.cut(tree + v);
+        } else if (op == 4) {
+            std::cout << sum << "\n";
+        } else if (op == 5) {
+            std::cout << easy[u] * (1 + (lct.connected(tree + 1, tree + u))) +
+                         easy[v] * (1 + (lct.connected(tree + 1, tree + v))) << "\n";
+        } else if (op == 6) {
+            if (lct.connected(tree + u, tree + v))
+                std::cout << lct.query(tree + u, tree + v) * (1 + lct.connected(tree + 1, tree + u)) << "\n";
+            else std::cout << "-1\n";
+        }
+    }
+}
+```
+
+## 2024.11.28.
+
+### <a href = "https://www.acmicpc.net/problem/18168">BOJ 18168</a>
+
+평범한 다중 대입값 계산 문제이다.
+
+## 2024.11.29.
+
+### <a href = "https://www.acmicpc.net/problem/17603">BOJ 17603</a>
+
+결론적으로 다음 방정식을 풀면 된다.
+
+$$x^2 + ax + b \equiv 0 \pmod{p}$$
+
+$p = 2$인 경우는 간단하므로, $p \neq 2$라 가정하자. 그러면 다음과 같이 정리된다.
+
+$$(x + a \cdot 2^{-1})^2 \equiv -b + a^2 \cdot 2^{-2} \pmod{p}$$
+
+이산 제곱근을 찾으면 된다.
+
+```cpp
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr), std::cout.tie(nullptr);
+
+    int T;
+    for (std::cin >> T; T--;) {
+        ll a, b;
+        std::cin >> mod >> b >> a;
+        
+        if (mod == 2) {
+            if (b == 1) {
+                if (a == 0) std::cout << "1 1\n";
+                else std::cout << "-1\n";
+            } else {
+                if (a == 0) std::cout << "0 0\n";
+                else std::cout << "0 1\n";
+            }
+            continue;
+        }
+
+        MInt x = (MInt(a) / 2).pow(2) - MInt(b);
+
+        if (x == 0) {
+            std::cout << MInt(a) / 2 << " " << MInt(a) / 2 << "\n";
+            continue;
+        }
+
+        if (x.pow((mod - 1) / 2) != 1) {
+            std::cout << "-1\n";
+            continue;
+        }
+
+        auto f = [&](MInt x) -> MInt {
+            ll q = mod - 1, s = 0, z = -1;
+            while (~q & 1) s++, q >>= 1;
+            for (ll i = 2; i < mod; i++) {
+                if (MInt(i).pow((mod - 1) / 2) != 1) {
+                    z = i;
+                    break;
+                }
+            }
+
+            MInt M = s, c = MInt(z).pow(q), t = x.pow(q), R = x.pow((q + 1) / 2);
+
+            while (true) {
+                if (t == 0) return 0;
+                if (t == 1) return R;
+                MInt k = t * t;
+                ll ii = -1;
+                for (ll i = 1; i < M.v; i++) {
+                    if (k == 1) {
+                        ii = i;
+                        break;
+                    }
+                    k *= k;
+                }
+                MInt b = c.pow(1 << (M.v - ii - 1));
+                M = ii, c = b * b, t = t * c, R = R * b;
+            }
+        };
+
+        MInt sq = f(x);
+
+        std::cout << MInt(a) / 2 + sq << " " << MInt(a) / 2 - sq << "\n";
+    }
+}
+```
+
+## 2024.11.30.
+
+### <a href = "https://www.acmicpc.net/problem/13539">BOJ 13539</a>
+
+시간이 없어서 급하게 링크-컷으로 날먹했다... 평범한 링크-컷으로 쉽게 해결 가능한 쿼리들이다.
+
+## 2024.12.01.
+
+### <a href = "https://www.acmicpc.net/problem/32850">BOJ 32850</a>
+
+바빠서 급하게 찾은 문제로, 제곱수의 합 2 (More Huge)와 비슷한데 범위만 다르다.
+
+## 2024.12.02.
+
+### <a href = "https://www.acmicpc.net/problem/25563">BOJ 25563</a>
+
+평범한 fwht 문제이다. 3가지 fwht를 모두 구현하면 된다.
+
+## 2024.12.03.
+
+### <a href = "https://www.acmicpc.net/problem/18609">BOJ 18609</a>
+
+## 2024.12.04.
+
+### <a href = "https://www.acmicpc.net/problem/14555">BOJ 14555</a>
+
+
