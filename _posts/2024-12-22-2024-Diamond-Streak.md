@@ -1907,4 +1907,125 @@ int main() {
 
 ### <a href = "https://www.acmicpc.net/problem/14555">BOJ 14555</a>
 
+## 2024.12.05.
+
+### <a href = "https://www.acmicpc.net/problem/16910">BOJ 16910</a>
+
+## 2024.12.06.
+
+### <a href = "https://www.acmicpc.net/problem/1257">BOJ 1257</a>
+
+어디서 많이 본 동전 dp 문제처럼 생겼지만 범위가 매우 크다. 그리고 가지고 있는 돈의 범위의 하한도 매우 크다. 일단 당연하게 돈이 매우 많으므로, 가장 큰 금액의 동전으로 일단 다 바꾸는게 이득이라 생각할 수 있다. 그런데 이렇게 하면 더 이상 해가 존재하지 않을 수 있다. 따라서, 가장 큰 금액의 동전을 환불받는다고 생각해보자. 그래프로 모델링하자.
+
+현재 가지고 있는 금액이 $v$원이며 우리의 목표는 $x$원을 만들고 싶다. 마지막 동전의 금액 $m$을 제외하고 $c$를 더한다고 생각하면 아래와 같은 2가지의 경우가 있다.
+
+- $v + c < m$
+- $v + c \geq m$
+
+$2$번째 경우만 생각하자. 일단 우리는 동전 $m$이 매우 많이 있다. 그러면 그냥 단순하게 $m$을 돌려받고, $c$를 내는게 이득이다. 그러면 $1$번 경우는 동전이 $1$개 추가되고, $2$번 경우는 동전이 추가되지 않는다. 따라서, 0-1 BFS 또는 다익스트라를 통해서 해결 가능하다.
+
+```cpp
+#include <bits/stdc++.h>
+
+using ll = long long;
+
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr), std::cout.tie(nullptr);
+
+    ll m;
+    int n;
+    std::cin >> m >> n;
+
+    std::vector<int> a(n);
+    for (auto &x: a) std::cin >> x;
+    std::sort(a.begin(), a.end());
+
+    std::priority_queue<std::array<int, 2>> pq;
+    std::vector<int> dist(a[n - 1], 1ll << 20);
+    dist[0] = 0, pq.push({0, 0});
+    while (!pq.empty()) {
+        auto [d, v] = pq.top();
+        pq.pop();
+
+        if (dist[v] < -d) continue;
+
+        for (int i = 0; i < n; i++) {
+            int nv = (v + a[i]) % a[n - 1], c = (v + a[i]) < a[n - 1];
+            if (dist[nv] > -d + c) {
+                dist[nv] = -d + c;
+                pq.push({d - c, nv});
+            }
+        }
+    }
+
+    std::cout << dist[m % a[n - 1]] + m / a[n - 1] << "\n";
+}
+```
+
+### <a href = "https://www.acmicpc.net/problem/12558">BOJ 12558</a>
+
+위와 동일한 문제다.
+
+## 2024.12.07.
+
+### <a href = "https://www.acmicpc.net/problem/19546">BOJ 19546</a>
+
+## 2024.12.08.
+
+### <a href = "https://www.acmicpc.net/problem/13554">BOJ 13554</a>
+
+## 2024.12.09.
+
+### <a href = "https://www.acmicpc.net/problem/20942">BOJ 20942</a>
+
+## 2024.12.10.
+
+### <a href = "https://www.acmicpc.net/problem/26468">BOJ 26468</a>
+
+## 2024.12.11.
+
+### <a href = "https://www.acmicpc.net/problem/18661">BOJ 18661</a>
+
+## 2024.12.12.
+
+### <a href = "https://www.acmicpc.net/problem/32465">BOJ 32465</a>
+
+## 2024.12.13.
+
+### <a href = "https://www.acmicpc.net/problem/17693">BOJ 17693</a>
+
+## 2024.12.14.
+
+### <a href = "https://www.acmicpc.net/problem/11915">BOJ 11915</a>
+
+## 2024.12.15.
+
+### <a href = "https://www.acmicpc.net/problem/11410">BOJ 11410</a>
+
+## 2024.12.16.
+
+### <a href = "https://www.acmicpc.net/problem/11122">BOJ 11122</a>
+
+## 2024.12.17.
+
+### <a href = "https://www.acmicpc.net/problem/1281">BOJ 1281</a>
+
+## 2024.12.18.
+
+### <a href = "https://www.acmicpc.net/problem/19578">BOJ 19578</a>
+
+## 2024.12.19.
+
+### <a href = "https://www.acmicpc.net/problem/7153">BOJ 7153</a>
+
+## 2024.12.20.
+
+### <a href = "https://www.acmicpc.net/problem/13091">BOJ 13091</a>
+
+## 2024.12.21.
+
+### <a href = "https://www.acmicpc.net/problem/20135">BOJ 20135</a>
+
+## 2024.12.22.
 
