@@ -184,10 +184,94 @@ int main() {
 
 ### <a href = "https://www.acmicpc.net/problem/28182">BOJ 28182</a>
 
+$1$번 참가자부터 처리해보자. 각각의 경기에서는 $1$번 선수보다 순위가 더 낮은 선수들 중 한 명이 제거되어야 한다. 또한, 최종적으로 $1$번 선수가 이겨야 하므로, 최종 상황에서는 모두 제거되어야 한다.
+
+다음의 이분 그래프를 생성하자.
+
+- $i$번 경기에서 $1$번 선수보다 순위가 낮은 선수들 $j$에 대해 $i \rightarrow j$를 연결한다.
+
+여기서 최대 매칭을 구했을 때 만약 $n - 1$보다 작다면 불가능하다. 즉, 최대 매칭이 $n - 1$이 아닌 경우에는 "No"를 출력하고 끝내자. 만약, 최대 매칭이 $n - 1$인 경우에는 답을 구성할 수 있을수도 있다. 결론적으로 항상 구성 가능하며, 구성은 아래와 같이 하면 된다.
+
+최대 매칭을 구했기 때문에, 각 경기에서 어떤 선수가 제거되어야 하는지가 결정이 되어 있다. $i$번째 경기에서 제거되어야 할 선수를 $a_i$라 하자. 하지만, 선수 $a_i$가 제거되기 위해서는 그보다 순위가 더 낮은 선수들이 이미 다 제거되어야 한다.
+다음을 반복하자.
+
+- 각 $i$에 대해 $a_i$보다 순위가 낮은 선수 중 아직 제거되지 않은 선수 중 순위가 가장 낮은 선수를 $b_i$라 하자. 또한, $b_i = a_j$인 $j$를 $a^{-1}_{b_i}$라 하자. 
+- $i \rightarrow a^{-1}\_{b\_i}$를 그래프에서 연결하자. 이는 경기 $i$가 진행되기 이전에 경기 $a^{-1}_{b_i}$가 진행되어야 한다는 의미다. 이는 일종의 함수형 그래프를 형성한다.
+- 함수형 그래프의 마지막은 하나의 사이클을 형성한다. 이 사이클 내부에서는 시작점의 위치는 중요하지 않고, 사이클 내부의 임의의 정점에서 시작하여 각 방향을 따라서 제거해주면 된다.
+
+이 방식은 최대 매칭을 구하는 시간이 $\mathcal{O}(n^3)$이기 때문에 모든 선수들에 대해서 진행하면 최종적인 시간 복잡도는 $\mathcal{O}(n^4)$이 된다. 최대 매칭을 $\mathcal{O}(n^{2.5})$에 구하여도 통과하기는 힘든 것으로 보인다. 최종적으로 통과하기 위해서는 최대 매칭을 $\mathcal{O}(n^3 / w)$에 구해줘야 한다. 아래는 std::bitset<>을 이용하여 구현한 최대 매칭 알고리즘이다.
+
+```cpp
+template<std::size_t sz>
+struct BipartiteMatching {
+    int n;
+    std::vector<std::bitset<sz>> graph;
+    std::vector<int> match, inv;
+    std::bitset<sz> check;
+
+    BipartiteMatching(int n) : n(n), graph(n), match(n, -1), inv(n + 1, -1) {
+        for (int i = 0; i < n; i++) graph[i].reset();
+    }
+
+    void add(int u, int v) {
+        graph[u][v] = 1;
+    }
+
+    void f(int u, int v) {
+        match[u] = v, inv[v] = u;
+    }
+
+    std::bitset<sz> visit;
+
+    bool dfs(int v) {
+        while (true) {
+            int x = (visit & graph[v])._Find_first();
+            if (x <= n) {
+                visit[x] = false;
+                if (inv[x] == -1 || dfs(inv[x])) {
+                    f(v, x);
+                    return true;
+                }
+            } else break;
+        }
+        return false;
+    }
+
+    int maximum_matching() {
+        int ans = 0;
+        visit.set();
+
+        for (int i = 0; i < n; i++) {
+            int j = (visit & graph[i])._Find_first();
+            if (j <= n) {
+                visit[j] = false, f(i, j), ans += 1;
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (match[i] != -1) continue;
+            visit.set();
+            ans += dfs(i);
+        }
+
+        return ans;
+    }
+};
+
+using Matching = BipartiteMatching<505>;
+```
+
+시간 제한이 조금 더 크거나, $n$의 범위가 조금 더 작았으면...
 
 ## 2024.10.16.
 
 ### <a href = "https://www.acmicpc.net/problem/23362">BOJ 23362</a>
+
+$a + b - \gcd(a, b) = n$을 만족하는 $a, b$의 개수다. $gcd(a, b) = g$로 정리하면,
+
+$$g(a^\prime + b^\prime - 1) = n$$
+
+즉, $g$는 $n$의 약수이며, $a^\prime$과 $b^\prime$은 서로소이므로, 이러한 $a$의 개수는 $\varphi(n / g + 1)$개 존재한다. $n$의 모든 약수를 구한 이후 $\varphi(x + 1)$의 합을 구하면 된다. 폴라드-로는 필요 없다.
 
 ## 2024.10.17.
 
@@ -253,6 +337,115 @@ int main() {
 ## 2024.10.19.
 
 ### <a href = "https://www.acmicpc.net/problem/12231">BOJ 12231</a>
+
+```cpp
+#include <bits/stdc++.h>
+
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr), std::cout.tie(nullptr);
+
+    int T;
+    std::cin >> T;
+    for (int test = 1; test <= T; test++) {
+        std::cout << "Case #" << test << ": ";
+        [&]() -> void {
+            int n;
+            std::cin >> n;
+
+            std::vector<std::array<int, 2>> v;
+            for (int x, i = 0; i < n; i++) {
+                char s;
+                std::cin >> s >> x;
+                v.push_back({s == 'E', x});    // in : (1, x) out : (0, x)
+            }
+
+            auto f = [&](int cnt) -> bool {
+                std::unordered_set<int> in, out;
+                std::vector<std::array<int, 2>> query;
+                std::unordered_map<int, std::deque<int>> events;
+                for (int i = cnt; i--;) query.push_back({1, 0});
+                for (int i = 0; i < n; i++) {
+                    query.push_back(v[i]);
+                    if (v[i][1] == 0) continue;
+                    if (!events.count(v[i][1])) events[v[i][1]] = std::deque<int>(), out.insert(v[i][1]);
+                    events[v[i][1]].push_back(i + cnt);
+                }
+                int it = 0x666666;
+                for (auto &[op, x]: query) {
+                    if (x != 0) events[x].pop_front();
+                    if (op == 1) {  // in
+                        if (x == 0) {
+                            int idx = INT32_MAX;
+                            for (const auto &y: out) {
+                                if (events.count(y) && !events[y].empty() && query[events[y].front()][0] == 0)
+                                    idx = std::min(idx, events[y].front());
+                            }
+                            if (idx == INT32_MAX) {
+                                in.insert(it++);
+                            } else {
+                                out.erase(query[idx][1]), in.insert(query[idx][1]);
+                            }
+                        } else if (in.count(x)) {
+                            return false;
+                        } else {
+                            out.erase(x), in.insert(x);
+                        }
+                    } else {
+                        if (x == 0) {
+                            int idx = INT32_MAX;
+                            for (const auto &y: in) {
+                                if (events.count(y) && !events[y].empty() && query[events[y].front()][0] == 1)
+                                    idx = std::min(idx, events[y].front());
+                            }
+                            if (idx == INT32_MAX) {
+                                for (const auto &y: in) {
+                                    if (!events.count(y) || events[y].empty()) idx = y;
+                                }
+                                if (idx == INT32_MAX) {
+                                    idx = INT32_MIN;
+                                    for (const auto &y: in) {
+                                        if (events.count(y) && !events[y].empty() && query[events[y].front()][0] == 0)
+                                            idx = std::max(idx, events[y].front());
+                                    }
+                                    if (idx == INT32_MIN) return false;
+                                    in.erase(query[idx][1]), out.insert(query[idx][1]);
+                                } else {
+                                    in.erase(idx);
+                                }
+                            } else {
+                                in.erase(query[idx][1]), out.insert(query[idx][1]);
+                            }
+                        } else if (out.count(x)) {
+                            return false;
+                        } else {
+                            in.erase(x), out.insert(x);
+                        }
+                    }
+                }
+                return true;
+            };
+
+            int low = 0, high = n, ans = -1;
+            while (low <= high) {
+                int mid = (low + high) >> 1;
+                if (f(mid)) high = mid - 1, ans = mid;
+                else low = mid + 1;
+            }
+
+            if (ans == -1) {
+                std::cout << "CRIME TIME";
+                return;
+            }
+
+            for (auto &[x, y]: v) ans += x ? 1 : -1;
+
+            std::cout << ans;
+        }();
+        std::cout << "\n";
+    }
+}
+```
 
 ## 2024.10.20.
 
@@ -602,6 +795,8 @@ int main() {
 
 ### <a href = "https://www.acmicpc.net/problem/15521">BOJ 15521</a>
 
+문제를 해석해보면, 하나의 간선을 제거했을 때의 최단 경로 비슷한 것을 구해야한다.
+
 ```cpp
 #include <bits/stdc++.h>
 
@@ -860,6 +1055,8 @@ int main() {
 ## 2024.11.12.
 
 ### <a href = "https://www.acmicpc.net/problem/18539">BOJ 18539</a>
+
+답은 항상 존재하므로, $F_{b_{k} + 1}$ 또한, $F_{b_{k} + 1 - b_{i}}$의 적절한 합으로 표현할 수 있다. 그리고, 키타마사를 쓰면, $F_{i}$를 초항들의 합으로 나타낼 수 있다. 나머지는 그냥 연립방정식을 풀면 된다.
 
 ```cpp
 int main() {
