@@ -135,13 +135,55 @@ int main() {
 
 ### <a href = "https://www.acmicpc.net/problem/14424">BOJ 14424</a>
 
+기본적으로 두부장수 장홍준 문제와 동일하다. 하지만, 범위가 더 커서 효율적인 MCMF 알고리즘을 사용해야 한다.
+
 ## 2024.10.14.
 
 ### <a href = "https://www.acmicpc.net/problem/21273">BOJ 21273</a>
 
+$k$를 $X_1 < X_2 < \cdots < X_k > X_{k + 1}$을 만족하는 수라고 하자. 만약 없다면, $k = m$이다. 그러면, 이제 가능한 순열 $P$는 다음과 같은 형태이다.
+
+{Somethings bigger than $X_1$}, $X_1$, {Something bigger than $X_2$}, $X_2$, $\cdots$, {Something bigger than $X_k$}, $X_k$, $X_{k+1}$, $\cdots$, $X_{m}$
+
+$X_1, X_2, \cdots, X_m$을 제외한 모든 수들을 하나씩 저기에 끼워 넣자.
+
+```cpp
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr), std::cout.tie(nullptr);
+
+    int n, m;
+    std::cin >> n >> m;
+
+    std::set<int> set;
+    for (int i = 1; i <= n; i++) set.insert(set.end(), i);
+
+    int x = m;
+    MInt ans = 1;
+    std::vector<int> v(m + 1);
+    for (int i = 1; i <= m; i++) {
+        std::cin >> v[i];
+        if (v[i] <= v[i - 1] && x == m) x = i - 1;
+        set.erase(v[i]);
+    }
+
+    {
+        int i = 0, j = 0;
+        for (auto &a: set) {
+            while (i + 1 <= x && v[i + 1] < a) i += 1;
+            ans *= i + (i == x) + j;
+            j += 1;
+        }
+    }
+
+    std::cout << ans;
+}
+```
+
 ## 2024.10.15.
 
 ### <a href = "https://www.acmicpc.net/problem/28182">BOJ 28182</a>
+
 
 ## 2024.10.16.
 
@@ -2029,3 +2071,4 @@ int main() {
 
 ## 2024.12.22.
 
+### <a href = ""
