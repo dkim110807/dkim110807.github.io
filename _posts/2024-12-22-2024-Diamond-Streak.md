@@ -1,7 +1,7 @@
 ---
 title: 2024 Diamond Streak
 author: dkim110807
-date: 2024-12-22 00:00:00 +0900
+date: 2034-12-22 00:00:00 +0900
 categories: [BOJ]
 tags: [problem solving]
 math: true
